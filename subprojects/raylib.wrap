@@ -2,3 +2,6 @@
 url = https://github.com/raysan5/raylib.git
 revision = HEAD
 depth = 1
+method=cmake
+[provide]
+raylib=raylib_dep
