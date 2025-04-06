@@ -2,8 +2,10 @@ project('raytest', 'c')
 
 cc = meson.get_compiler('c')
 
+deps = []
+
 if host_machine.system() == 'windows'
-  dependencies += [
+  deps += [
     cc.find_library('winmm'),
   ]
 elif host_machine.system() == 'darwin'
@@ -12,7 +14,7 @@ elif host_machine.system() == 'darwin'
     '-framework', 'IOKit',
   ]
 elif host_machine.system() == 'linux'
-  dependencies += [
+  deps += [
     cc.find_library('m'),
     cc.find_library('dl'),
   ]
@@ -25,12 +27,9 @@ elif host_machine.system() == 'emscripten'
 endif
 
 cmake = import('cmake')
-
 raylib = cmake.subproject('raylib')
-
-deps = [
+deps += [
      raylib.dependency('raylib'),
-     libm
      ]
 
 executable('raytest', 'src/main.c', dependencies : deps)
