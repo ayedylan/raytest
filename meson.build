@@ -1,10 +1,10 @@
 project('raytest', 'c')
 
-libm= meson.get_compiler('c').find_library('m')
-
 cmake = import('cmake')
 
 raylib = cmake.subproject('raylib')
+libm = cmake.subproject('openlibm')
+
 
 deps = [
      raylib.dependency('raylib'),
