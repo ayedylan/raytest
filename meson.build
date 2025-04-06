@@ -1,5 +1,7 @@
 project('raytest', 'c')
 
+cc = meson.get_compiler('c')
+
 if host_machine.system() == 'windows'
   dependencies += [
     cc.find_library('winmm'),
