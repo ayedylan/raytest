@@ -18,23 +18,11 @@ int main(void) {
 
   Vector3 p1Pos =  { 0.0f, 0.0f, 1.0f };
 
-  int animsCount = 3;
-  Model p1 = LoadModel("assets/scene.gltf");
-  ModelAnimation *modelAnimations = LoadModelAnimations("assets/scene.gltf", &animsCount);
-
-    unsigned int animCurrentFrame = 0;
-  
-  
-  
   while(!WindowShouldClose()) {
 
       
     ClearBackground(RAYWHITE);
     BeginDrawing();
-
-    ModelAnimation anim = modelAnimations[5];
-    animCurrentFrame = (animCurrentFrame + 1)%anim.frameCount;
-    UpdateModelAnimation(p1, anim, animCurrentFrame);
 
     // Render the 3D ish 
     
@@ -42,9 +30,7 @@ int main(void) {
 
     DrawGrid(10, 1.0f);
 
-    DrawModelEx(p1, p1Pos, (Vector3){ 1.0f, 0.0f, 0.0f }, 360.0f, (Vector3){ 1.0f, 1.0f, 1.0f }, MAROON);
-
-    
+    DrawCube(p1Pos, 1, 1, 1, MAROON);
     EndMode3D();
 
     // Render the UI
