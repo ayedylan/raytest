@@ -9,7 +9,10 @@ const char * InputDirection() {
   };
   if (IsKeyDown(KEY_S)) {
     return "d";
-  }
+  };
+  if (IsKeyDown(KEY_A)) {
+    return "b";
+  };
 };
 
 
