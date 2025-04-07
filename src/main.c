@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include "input.h"
 
 int main(void) {
   const int screenWidth = 1000;
@@ -37,6 +38,7 @@ int main(void) {
 
 
     DrawFPS(10,10);
+    DrawText(InputDirection(), 10,  30, 20, BLACK);
     
     EndDrawing();
     
