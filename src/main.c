@@ -1,5 +1,4 @@
 #include <raylib.h>
-#include "input.h"
 
 int main(void) {
   const int screenWidth = 1000;
@@ -17,7 +16,7 @@ int main(void) {
   camera.fovy = 45.0f;                                // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
-  Vector3 p1Pos =  { 0.0f, 0.0f, 1.0f };
+  Vector3 p1Pos =  { 0.0f, 0.0f, 0.0f };
 
   while(!WindowShouldClose()) {
 
@@ -38,7 +37,6 @@ int main(void) {
 
 
     DrawFPS(10,10);
-    DrawText(InputDirection(), 10,  30, 20, BLACK);
     
     EndDrawing();
     
