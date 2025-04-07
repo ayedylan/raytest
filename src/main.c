@@ -10,13 +10,20 @@ int main(void) {
   SetTargetFPS(60);
   
   Camera3D camera = { 0 };
-  camera.position = (Vector3){ 5.0f, 1.5f, 0 }; // Camera position
-  camera.target = (Vector3){ 0.0f, 1.0f, 0.0f };      // Camera looking at point
+  camera.position = (Vector3){ 10.0f, 10.0f, 0 }; // Camera position
+  camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
   camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;                                // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
-  Vector3 p1Pos =  { 0.0f, 0.0f, 0.0f };
+  // Load image into VRAM
+
+  Image image = LoadImage("assets/heightmap.png");
+  Mesh mesh = GenMeshHeightmap(image, (Vector3){ 16, 8, 16 }); // Generate heightmap mesh (RAM and VRAM)
+  Model model = LoadModelFromMesh(mesh);
+  
+  
+  Vector3 terrainPos =  { 0.0f, 0.0f, 0.0f };
 
   while(!WindowShouldClose()) {
 
@@ -28,9 +35,9 @@ int main(void) {
     
     BeginMode3D(camera);
 
+    DrawModel(model, terrainPos, 1.0f, RED);
     DrawGrid(10, 1.0f);
-
-    DrawCube(p1Pos, 1, 1, 1, MAROON);
+    
     EndMode3D();
 
     // Render the UI
