@@ -1,51 +1,66 @@
-#include <raylib.h>
+#include "raylib.h"
 
-int main(void) {
-  const int screenWidth = 1000;
-  const int screenHeight = 700;
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
+{
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 1200;
+    const int screenHeight = 600;
 
-  InitWindow(screenWidth, screenHeight, "Raylib Test");
+    InitWindow(screenWidth, screenHeight, "raylib test");
 
+    // Define our custom camera to look into our 3d world
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.0f, 300.0f, 900.0f };     // Camera position
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };          // Camera looking at point
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };              // Camera up vector (rotation towards target)
+    camera.fovy = 45.0f;                                    // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE;                 // Camera projection type
+							    //
+    Image image = LoadImage("assets/heightmap.png");     // Load heightmap image (RAM)
+    Texture2D texture = LoadTextureFromImage(image);        // Convert image to texture (VRAM)
 
-  SetTargetFPS(60);
-  
-  Camera3D camera = { 0 };
-  camera.position = (Vector3){ 10.0f, 10.0f, 0 }; // Camera position
-  camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-  camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-  camera.fovy = 45.0f;                                // Camera field-of-view Y
-  camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+    Mesh mesh = GenMeshHeightmap(image, (Vector3){ 1600, 200, 1600 }); // Generate heightmap mesh (RAM and VRAM)
+    Model model = LoadModelFromMesh(mesh);                  // Load model from generated mesh
 
-  // Load image into VRAM
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture
+    Vector3 mapPosition = { -800.0f, 0.0f, -800.0f };           // Define model position
 
-  Image image = LoadImage("assets/heightmap.png");
-  Mesh mesh = GenMeshHeightmap(image, (Vector3){ 16, 8, 16 }); // Generate heightmap mesh (RAM and VRAM)
-  Model model = LoadModelFromMesh(mesh);
-  
-  
-  Vector3 terrainPos =  { 0.0f, 0.0f, 0.0f };
+    UnloadImage(image);             // Unload heightmap image from RAM, already uploaded to VRAM
 
-  while(!WindowShouldClose()) {
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    //--------------------------------------------------------------------------------------
 
-      
-    ClearBackground(RAYWHITE);
-    BeginDrawing();
+    // Main game loop
+    while (!WindowShouldClose())    // Detect window close button or ESC key
+    {
 
-    // Render the 3D ish 
-    
-    BeginMode3D(camera);
+        BeginDrawing();
 
-    DrawModel(model, terrainPos, 1.0f, RED);
-    DrawGrid(10, 1.0f);
-    
-    EndMode3D();
+        ClearBackground(RAYWHITE);
 
-    // Render the UI
+	BeginMode3D(camera);
 
+        DrawModel(model, mapPosition, 1.0f, RED);
 
-    DrawFPS(10,10);
-    
-    EndDrawing();
-    
-  }
+        EndMode3D();
+
+        DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+    UnloadTexture(texture);     // Unload texture
+    UnloadModel(model);         // Unload model
+
+    CloseWindow();              // Close window and OpenGL context
+    //--------------------------------------------------------------------------------------
+
+    return 0;
 }
