@@ -1,66 +1,74 @@
 #include "raylib.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
 int main(void)
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 1200;
-    const int screenHeight = 600;
+    	const int screenWidth = 1200;
+	const int screenHeight = 600;
 
-    InitWindow(screenWidth, screenHeight, "raylib test");
+	InitWindow(screenWidth, screenHeight, "raylib test");
+	ToggleFullscreen();
 
-    // Define our custom camera to look into our 3d world
-    Camera camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 300.0f, 900.0f };     // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };          // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };              // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                    // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;                 // Camera projection type
-							    //
-    Image image = LoadImage("assets/heightmap.png");     // Load heightmap image (RAM)
-    Texture2D texture = LoadTextureFromImage(image);        // Convert image to texture (VRAM)
+	Camera3D camera = { 0 };
+	camera.position = (Vector3){ 10.0f, 1.0f, 0.0f };
+	camera.target = (Vector3)  { 0.0f, 0.0f, 0.0f };
+	camera.up = (Vector3) { 0.0f, 1.0f, 0.0f };
+	camera.fovy = 10.0;
+	camera.projection = CAMERA_ORTHOGRAPHIC;
 
-    Mesh mesh = GenMeshHeightmap(image, (Vector3){ 1600, 200, 1600 }); // Generate heightmap mesh (RAM and VRAM)
-    Model model = LoadModelFromMesh(mesh);                  // Load model from generated mesh
+	SetTargetFPS(60);
 
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture
-    Vector3 mapPosition = { -800.0f, 0.0f, -800.0f };           // Define model position
+	Vector3 p1Pos = {0.0f, 0.0f, 0.0f };
 
-    UnloadImage(image);             // Unload heightmap image from RAM, already uploaded to VRAM
+	Image image = LoadImage("assets/heightmap.png");     // Load heightmap image (RAM
+								    //
+	Texture2D texture = LoadTextureFromImage(image);        // Convert image to texture (VRAM)
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+	Mesh mesh = GenMeshHeightmap(image, (Vector3){ 160, 8, 160 }); // Generate heightmap mesh (RAM and VRAM)
+	Model model = LoadModelFromMesh(mesh);                  // Load model from generated mesh
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
+	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture
+	Vector3 mapPosition = { -80.0f, -1.0f, -80.0f };           // Define model position
 
-        BeginDrawing();
+	UnloadImage(image);
+	while (!WindowShouldClose()) {
+		ClearBackground(RAYWHITE);
 
-        ClearBackground(RAYWHITE);
+		if (IsKeyDown (KEY_A)) {
+			p1Pos.z += 0.1f;
+		} else if (IsKeyDown (KEY_D)) {
+			p1Pos.z -= 0.1f;
+		} else if (IsKeyDown (KEY_S)) {
+			p1Pos.x += 0.1f;
+			camera.position.z += 0.1f;
+		} else if (IsKeyDown (KEY_W)) {
+			p1Pos.x -= 0.1f;
+		};
 
-	BeginMode3D(camera);
 
-        DrawModel(model, mapPosition, 1.0f, RED);
+		camera.target = p1Pos;
+		camera.position.x = p1Pos.x + 10.0f;
+		camera.position.z = p1Pos.z;
+		camera.position.y = GetMouseY()/20.0+10.0;
 
-        EndMode3D();
+		BeginDrawing();
+	    
+		BeginMode3D(camera);
 
-        DrawFPS(10, 10);
+		DrawCube(p1Pos, 1.0f, 1.0f, 1.0f, RED);
 
-        EndDrawing();
-        //----------------------------------------------------------------------------------
-    }
+		DrawCube( (Vector3){ 5, 0, 5 }, 1.0f, 1.0f, 1.0f, BLUE);
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    UnloadTexture(texture);     // Unload texture
-    UnloadModel(model);         // Unload model
+		DrawModel(model, mapPosition, 1.0f, RED);
 
-    CloseWindow();              // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+		EndMode3D();
 
-    return 0;
+		DrawFPS(10, 10);
+
+		EndDrawing();
+
+	}
+
+	CloseWindow();
+
+	return 0;
 }
